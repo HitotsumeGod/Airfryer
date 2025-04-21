@@ -36,6 +36,7 @@ void fencrypt(char *fname) {
 	if (freopen(fname, "wb", f) == NULL) {
 		perror("freopen err");
 	}
+	printf("%s %s.\n", "Encrypting", fname);
 	if (fwrite(bitbuf, sizeof(char), fsize, f) < 0) {
 		perror("fwrite err");
 		exit(EXIT_FAILURE);

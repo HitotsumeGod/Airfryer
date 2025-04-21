@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include <windows.h>
 #include "airf.h"
 
@@ -10,12 +11,14 @@ void iterate_dir(char *op, char *parentd) {
 	HANDLE winhandle;
 	char *namebuf, dirbuf[200];
 	int n;
+	bool have_recursed;
 	
 	if ((winhandle = FindFirstFile("*", &wd)) == INVALID_HANDLE_VALUE) {
 		perror("findfirstfile err");
 		exit(EXIT_FAILURE);
 	}
 	while (FindNextFile(winhandle, &wd) > 0) {
+		have_recursed = false;
 		if ((namebuf = malloc(sizeof(char) * (strlen(wd.cFileName) + 1))) == NULL) {
 			perror("malloc err");
 			exit(EXIT_FAILURE);
@@ -35,8 +38,9 @@ void iterate_dir(char *op, char *parentd) {
 					perror("setdirectory err");
 					exit(EXIT_FAILURE);
 				}
-				printf("Moving to %s\n", namebuf);
+				printf("Moving to %s from %s\n", namebuf, dirbuf);
 				iterate_dir(op, dirbuf);
+				have_recursed = true;
 			}
 		} else if (!(wd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN || wd.dwFileAttributes & FILE_ATTRIBUTE_SYSTEM) && strcmp(THISNAME, namebuf) == 1) {
 			if (strcmp("-e", op) == 0)
@@ -49,18 +53,19 @@ void iterate_dir(char *op, char *parentd) {
 			}
 		}
 		free(namebuf);
+		//RETURN TO PRIOR DIRECTORY IF RECURSIVE CALL
+		if (have_recursed) {
+			if (SetCurrentDirectory(parentd) == 0) {
+				perror("setdirectory err");
+				exit(EXIT_FAILURE);
+			}
+			printf("Returning to %s\n", parentd);
+		}
 	}
 	if (GetLastError() != ERROR_NO_MORE_FILES) {
 		perror("FindNextFile error.");
 		exit(EXIT_FAILURE);
 	}
-	//RETURN TO PRIOR DIRECTORY IF RECURSIVE CALL
-	if (parentd)
-		if (SetCurrentDirectory(parentd) == 0) {
-			perror("setdirectory err");
-			exit(EXIT_FAILURE);
-		}
-	printf("Returning to %s\n", parentd);
 		
 
 }
