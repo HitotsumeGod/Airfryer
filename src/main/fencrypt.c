@@ -9,8 +9,8 @@ void fencrypt(char *fname) {
 	long fsize;
 
 	if ((f = fopen(fname, "rb")) == NULL) {
-		perror("fopen err");
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "%s%s\n", fname, " is under lock and key.");
+		return;
 	}
 	if (fseek(f, 0, SEEK_END) == -1) {
 		perror("fseek err");
@@ -34,7 +34,9 @@ void fencrypt(char *fname) {
 			*(bitbuf + i) -= DEGREE;
 	}
 	if (freopen(fname, "wb", f) == NULL) {
-		perror("freopen err");
+		fprintf(stderr, "%s%s\n", fname, " is under lock and key.");
+		free(bitbuf);
+		return;
 	}
 	printf("%s %s.\n", "Encrypting", fname);
 	if (fwrite(bitbuf, sizeof(char), fsize, f) < 0) {

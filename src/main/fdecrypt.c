@@ -9,8 +9,8 @@ void fdecrypt(char *fname) {
 	long fsize;
 
 	if ((f = fopen(fname, "rb")) == NULL) {
-		perror("fopen err");
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "%s%s\n", fname, " is under lock and key.");
+		return;
 	}
 	if (fseek(f, 0, SEEK_END) == -1) {
 		perror("fseek err");
@@ -28,14 +28,17 @@ void fdecrypt(char *fname) {
 			exit(EXIT_FAILURE);
 		}
 	for (int i = 0; i < fsize; i++) {
-		if (*(bitbuf + i) == 252 || *(bitbuf + i) == 253)
-			*(bitbuf + i) += DEGREE;
-		else
+		if (*(bitbuf + i) < ASCII_LIM - DEGREE)
 			*(bitbuf + i) -= DEGREE;
+		else 
+			*(bitbuf + i) += DEGREE;
 	}
 	if (freopen(fname, "wb", f) == NULL) {
-		perror("freopen err");
+		fprintf(stderr, "%s%s\n", fname, " is under lock and key.");
+		free(bitbuf);
+		return;
 	}
+	printf("%s %s.\n", "Decrypting", fname);
 	if (fwrite(bitbuf, sizeof(char), fsize, f) < 0) {
 		perror("fwrite err");
 		exit(EXIT_FAILURE);
