@@ -6,7 +6,7 @@
 #define DEGREE 2
 
 extern void elevate_perms(void);
-extern void iterate_dir(char *operation, char *parent_dir);
+extern void iterate_dir(char *operation, char *execpath);
 extern void fencrypt(char *fname);
 extern void fdecrypt(char *fname); 
 

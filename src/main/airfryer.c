@@ -10,9 +10,9 @@ int main(int argc, char *argv[]) {
 		return EXIT_FAILURE;
 	}
 	if (argc == 1) 
-		iterate_dir("-e", NULL);
+		iterate_dir("-e", argv[0]);
 	else
-		iterate_dir(argv[1], NULL);
+		iterate_dir(argv[1], argv[0]);
 
 	return 0;
 
