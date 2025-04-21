@@ -6,21 +6,16 @@
 
 int main(int argc, char *argv[]) {
 
+	char toexec[50];
+
 	if (argc > 2) {
 		return EXIT_FAILURE;
 	}
 	if (argc == 1) 
 		iterate_dir("-e", argv[0]);
 	else {
-		if (strcat(argv[0], " ") == NULL) {
-			perror("strcat err");
-			return EXIT_FAILURE;
-		}
-		if (strcat(argv[0], argv[1]) == NULL) {
-			perror("strcat err");
-			return EXIT_FAILURE;
-		}
-		iterate_dir(argv[1], argv[0]);
+		sprintf(toexec, "%s %s", argv[0], argv[1]);
+		iterate_dir(argv[1], toexec);
 	}
 
 	return 0;
