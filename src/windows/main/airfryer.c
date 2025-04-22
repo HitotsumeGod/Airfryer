@@ -10,6 +10,7 @@
 int main(int argc, char *argv[]) {
 
 	char toexec[50];
+	char cudir[60];
 
 	if (argc > 2) 
 		return EXIT_FAILURE;
@@ -19,15 +20,21 @@ int main(int argc, char *argv[]) {
 			fprintf(stderr, "SetCurrentDirectory error : %d\n", GetLastError());
 			return EXIT_FAILURE;
 		}
+		if (GetCurrentDirectory(sizeof cudir, cudir) == 0) {
+			perror("gcd err");
+			return EXIT_FAILURE;
+		}
+		printf("%s\n", cudir);
+		return 1;
 		if (sprintf(toexec, "%s %s", argv[0], "-e") == -1) {
 			perror("sprintf err");
-			exit(EXIT_FAILURE);
+			return EXIT_FAILURE;
 		}
 		iterate_dir("-e", toexec);
 	} else {
-		sprintf(toexec, "%s %s", argv[0], argv[1]) {
+		if (sprintf(toexec, "%s %s", argv[0], argv[1]) == -1) {
 			perror("sprintf err");
-			exit(EXIT_FAILURE);
+			return EXIT_FAILURE;
 		}
 		iterate_dir(argv[1], toexec);
 	}
