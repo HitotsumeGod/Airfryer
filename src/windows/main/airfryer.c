@@ -24,8 +24,6 @@ int main(int argc, char *argv[]) {
 			perror("gcd err");
 			return EXIT_FAILURE;
 		}
-		printf("%s\n", cudir);
-		return 1;
 		if (sprintf(toexec, "%s %s", argv[0], "-e") == -1) {
 			perror("sprintf err");
 			return EXIT_FAILURE;
