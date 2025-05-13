@@ -5,7 +5,7 @@
 void fdecrypt(char *fname) {
 
 	FILE *f;
-	char *bitbuf;
+	char *bitbuf, asmp;
 	long fsize;
 
 	if ((f = fopen(fname, "rb")) == NULL) {
@@ -28,10 +28,13 @@ void fdecrypt(char *fname) {
 			exit(EXIT_FAILURE);
 		}
 	for (int i = 0; i < fsize; i++) {
-		if (*(bitbuf + i) < ASCII_LIM - DEGREE)
-			*(bitbuf + i) -= DEGREE;
-		else 
-			*(bitbuf + i) += DEGREE;
+		asmp = *(bitbuf + i);
+		asm volatile (
+			"rorb %2, %1"
+			: "=r"(asmp)
+			: "r"(asmp), "i"(DEGREE)
+		);
+		*(bitbuf + i) = asmp;	
 	}
 	if (freopen(fname, "wb", f) == NULL) {
 		fprintf(stderr, "%s%s\n", fname, " is under lock and key.");

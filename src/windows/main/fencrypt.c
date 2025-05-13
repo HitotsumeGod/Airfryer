@@ -6,7 +6,7 @@
 void fencrypt(char *fname) {
 
 	FILE *f;
-	char *bitbuf;
+	char *bitbuf, asmp;
 	long fsize;
 
 	if ((f = fopen(fname, "rb")) == NULL) {
@@ -29,10 +29,13 @@ void fencrypt(char *fname) {
 			exit(EXIT_FAILURE);
 		}
 	for (int i = 0; i < fsize; i++) {
-		if (*(bitbuf + i) < ASCII_LIM - DEGREE)
-			*(bitbuf + i) += DEGREE;
-		else 
-			*(bitbuf + i) -= DEGREE;
+		asmp = *(bitbuf + i);
+		asm volatile (
+			"rolb %2, %1"
+			: "=r"(asmp)
+			: "r"(asmp), "i"(DEGREE)
+		);
+		*(bitbuf + i) = asmp;
 	}
 	if (freopen(fname, "wb", f) == NULL) {
 		if (!erase_file_dacl(fname)) {
